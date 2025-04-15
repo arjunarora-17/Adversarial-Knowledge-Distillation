@@ -154,7 +154,7 @@ def main():
 
     print("######################################")
 
-    generator = network.gan.GeneratorA(nz=args.nz, nc=3, img_size=32)
+    generator = network.gan.GeneratorA(nz=args.nz, nc=3, img_size=224)
 
     teacher.load_state_dict( torch.load( args.ckpt ) )
     print("Teacher restored from %s"%(args.ckpt))
