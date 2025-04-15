@@ -5,7 +5,6 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 import network
-# from utils.visualizer import VisdomPlotter
 from utils import pack_images, denormalize
 from dataloader import get_dataloader
 import os, random
@@ -41,7 +40,6 @@ def train(args, teacher, student, generator, device, optimizer, epoch):
         t_logit = teacher(fake) 
         s_logit = student(fake)
 
-        #loss_G = - torch.log( F.l1_loss( s_logit, t_logit )+1) 
         loss_G = - F.l1_loss( s_logit, t_logit ) 
 
         loss_G.backward()
@@ -75,8 +73,6 @@ def test(args, student, generator, device, test_loader, epoch=0):
                     "generated": wandb.Image(gen_image, caption="Generated Images")
                 })
 
-                # vp.add_image( 'input', pack_images( denormalize(data,(0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)).clamp(0,1).detach().cpu().numpy() ) )
-                # vp.add_image( 'generated', pack_images( denormalize(fake,(0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)).clamp(0,1).detach().cpu().numpy() ) )
 
             test_loss += F.cross_entropy(output, target, reduction='sum').item() # sum up batch loss
             pred = output.argmax(dim=1, keepdim=True) # get the index of the max log-probability
@@ -180,10 +176,9 @@ def main():
         acc_list.append(acc)
         if acc>best_acc:
             best_acc = acc
-            torch.save(student.state_dict(),"checkpoint/student/%s-%s.pt"%(args.dataset, 'resnet18_8x'))
-            torch.save(generator.state_dict(),"checkpoint/student/%s-%s-generator.pt"%(args.dataset, 'resnet18_8x'))
+            torch.save(student.state_dict(),"checkpoints/student/%s-%s.pt"%(args.dataset, 'resnet18_8x'))
+            torch.save(generator.state_dict(),"checkpoints/student/%s-%s-generator.pt"%(args.dataset, 'resnet18_8x'))
         wandb.log({"Acc": acc}, step=epoch)
-        # vp.add_scalar('Acc', epoch, acc)
     print("Best Acc=%.6f"%best_acc)
 
     import csv
