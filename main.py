@@ -10,6 +10,7 @@ from dataloader import get_dataloader
 import os, random
 import numpy as np
 import torchvision
+import torchvision.transforms as transforms
 
 import wandb
 
@@ -64,6 +65,7 @@ def test(args, student, generator, device, test_loader, epoch=0):
             z = torch.randn( (data.shape[0], args.nz, 1, 1), device=data.device, dtype=data.dtype )
             fake = generator(z)
             fake = F.interpolate(fake, size=(224, 224), mode='bilinear', align_corners=False)
+            print("Shape: ",fake.shape)
 
             output = student(data)
             if i==0:
