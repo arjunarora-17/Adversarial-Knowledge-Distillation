@@ -1,6 +1,6 @@
 import numpy as np
 import math
-
+import torch
 
 def pack_images(images, col=None, channel_last=False):
     # N, C, H, W

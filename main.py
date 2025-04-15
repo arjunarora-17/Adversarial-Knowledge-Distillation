@@ -68,7 +68,8 @@ def test(args, student, generator, device, test_loader, epoch=0):
             if i==0:
                 input_image = pack_images(denormalize(data, (0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)).clamp(0,1).detach().cpu().numpy())
                 gen_image = pack_images(denormalize(fake, (0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)).clamp(0,1).detach().cpu().numpy())
-
+                input_image = input_image.transpose(1, 2, 0)
+                gen_image = gen_image.transpose(1, 2, 0)
                 wandb.log({
                     "input": wandb.Image(input_image, caption="Real Images"),
                     "generated": wandb.Image(gen_image, caption="Generated Images")
