@@ -84,6 +84,7 @@ def test(args, student, generator, device, test_loader, epoch=0):
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
     acc = correct/len(test_loader.dataset)
+    wandb.log({"Acc": acc})
     return acc
 
 def main():
@@ -189,7 +190,6 @@ def main():
             best_acc = acc
             torch.save(student.state_dict(),"checkpoints/student/%s-%s.pt"%(args.dataset, args.model))
             torch.save(generator.state_dict(),"checkpoints/student/%s-%s-generator.pt"%(args.dataset, args.model))
-        wandb.log({"Acc": acc}, step=epoch)
     print("Best Acc=%.6f"%best_acc)
 
     import csv
