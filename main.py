@@ -105,7 +105,7 @@ def main():
 
     parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100'],
                         help='dataset name (default: cifar10)')
-    parser.add_argument('--model', type=str, default='resnet18', choices=['resnet18','effecientb3'],
+    parser.add_argument('--model', type=str, default='resnet18', choices=['resnet18','effecientb0'],
                         help='model name (default: resnet18)')
     parser.add_argument('--weight_decay', type=float, default=5e-4)
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
@@ -143,8 +143,8 @@ def main():
     teacher = network.resnet.ResNet34(num_classes=num_classes)
     if args.model == 'resnet18':
         student = network.resnet.ResNet18(num_classes=num_classes)
-    elif args.model == 'effecientb3':
-        student = network.resnet.EfficientNetB3(num_classes=num_classes)
+    elif args.model == 'effecientb0':
+        student = network.resnet.EfficientNetB0(num_classes=num_classes)
     else:
         raise ValueError("Unknown model: %s" % args.model)
     print("######################################")
@@ -187,8 +187,8 @@ def main():
         acc_list.append(acc)
         if acc>best_acc:
             best_acc = acc
-            torch.save(student.state_dict(),"checkpoints/student/%s-%s.pt"%(args.dataset, 'resnet18'))
-            torch.save(generator.state_dict(),"checkpoints/student/%s-%s-generator.pt"%(args.dataset, 'resnet18'))
+            torch.save(student.state_dict(),"checkpoints/student/%s-%s.pt"%(args.dataset, args.model))
+            torch.save(generator.state_dict(),"checkpoints/student/%s-%s-generator.pt"%(args.dataset, args.model))
         wandb.log({"Acc": acc}, step=epoch)
     print("Best Acc=%.6f"%best_acc)
 
