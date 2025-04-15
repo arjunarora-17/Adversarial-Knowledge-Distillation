@@ -38,8 +38,6 @@ def train(args, teacher, student, generator, device, optimizer, epoch):
         optimizer_G.zero_grad()
         generator.train()
         fake = generator(z)
-        print("Fake shape before - ", fake.shape)
-        fake = F.interpolate(fake, size=(224, 224), mode='bilinear', align_corners=False)
         t_logit = teacher(fake) 
         s_logit = student(fake)
 
@@ -65,9 +63,6 @@ def test(args, student, generator, device, test_loader, epoch=0):
 
             z = torch.randn( (data.shape[0], args.nz, 1, 1), device=data.device, dtype=data.dtype )
             fake = generator(z)
-            fake = F.interpolate(fake, size=(224, 224), mode='bilinear', align_corners=False)
-            print("Shape: ",fake.shape)
-
             output = student(data)
             if i==0:
                 input_image = pack_images(denormalize(data, (0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)).clamp(0,1).detach().cpu().numpy())
