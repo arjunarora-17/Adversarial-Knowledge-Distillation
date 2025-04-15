@@ -13,9 +13,10 @@ import numpy as np
 import torchvision
 
 import wandb
-wandb.init(project="DFAD-cifar", config=vars(args))
+
 
 def train(args, teacher, student, generator, device, optimizer, epoch):
+    wandb.init(project="DFAD-cifar", config=vars(args))
     teacher.eval()
     student.train()
     generator.train()
@@ -139,7 +140,7 @@ def main():
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
     print(args)
 
-    _, test_loader = get_dataloader(args)
+    test_loader = get_dataloader(args)
 
     num_classes = 10 if args.dataset=='cifar10' else 100
     teacher = network.resnet.ResNet34(num_classes=num_classes)
