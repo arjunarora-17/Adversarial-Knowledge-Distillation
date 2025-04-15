@@ -110,9 +110,7 @@ def main():
                         help='learning rate (default: 0.1)')
     parser.add_argument('--data_root', type=str, default='data')
 
-    parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100'],
-                        help='dataset name (default: cifar10)')
-    parser.add_argument('--model', type=str, default='resnet18', choices=['resnet18','effecientb0'],
+    parser.add_argument('--model', type=str, default='resnet18', choices=['resnet18','smallmodel'],
                         help='model name (default: resnet18)')
     parser.add_argument('--weight_decay', type=float, default=5e-4)
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
@@ -146,18 +144,17 @@ def main():
 
     test_loader = get_dataloader(args)
 
-    num_classes = 10 if args.dataset=='cifar10' else 100
+    num_classes =100
     teacher = network.resnet.ResNet34(num_classes=num_classes)
     if args.model == 'resnet18':
         student = network.resnet.ResNet18(num_classes=num_classes)
-    elif args.model == 'effecientb0':
-        student = network.resnet.EfficientNetB0(num_classes=num_classes)
+    elif args.model == 'smallmodel':
+        student = network.resnet.SmallModel(num_classes=num_classes)
     else:
         raise ValueError("Unknown model: %s" % args.model)
     print("######################################")
     print(f"## STUDENT PARAMETERS: {network.count_parameters.count(student)} ##")
     print(f"## TEACHER PARAMETERS: {network.count_parameters.count(teacher)} ##")
-
     print("######################################")
 
     generator = network.gan.GeneratorA(nz=args.nz, nc=3, img_size=32)
@@ -194,13 +191,13 @@ def main():
         acc_list.append(acc)
         if acc>best_acc:
             best_acc = acc
-            torch.save(student.state_dict(),"checkpoints/student/%s-%s.pt"%(args.dataset, args.model))
-            torch.save(generator.state_dict(),"checkpoints/student/%s-%s-generator.pt"%(args.dataset, args.model))
+            torch.save(student.state_dict(),"checkpoints/student/%s-%s.pt"%("CIFAR100", args.model))
+            torch.save(generator.state_dict(),"checkpoints/student/%s-%s-generator.pt"%("CIFAR100", args.model))
     print("Best Acc=%.6f"%best_acc)
 
     import csv
     os.makedirs('log', exist_ok=True)
-    with open('log/DFAD-%s.csv'%(args.dataset), 'a') as f:
+    with open('log/DFAD-%s.csv'%("CIFAR100"), 'a') as f:
         writer = csv.writer(f)
         writer.writerow(acc_list)
 
