@@ -147,6 +147,12 @@ def main():
         student = network.resnet.EfficientNetB3(num_classes=num_classes)
     else:
         raise ValueError("Unknown model: %s" % args.model)
+    print("######################################")
+    print(f"## STUDENT PARAMETERS: {network.count_parameters.count(student)} ##")
+    print(f"## TEACHER PARAMETERS: {network.count_parameters.count(teacher)} ##")
+
+    print("######################################")
+
     generator = network.gan.GeneratorA(nz=args.nz, nc=3, img_size=32)
 
     teacher.load_state_dict( torch.load( args.ckpt ) )
