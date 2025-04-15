@@ -105,8 +105,8 @@ def main():
 
     parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100'],
                         help='dataset name (default: cifar10)')
-    parser.add_argument('--model', type=str, default='resnet18_8x', choices=['resnet18_8x'],
-                        help='model name (default: resnet18_8x)')
+    parser.add_argument('--model', type=str, default='resnet18', choices=['resnet18','effecientb3'],
+                        help='model name (default: resnet18)')
     parser.add_argument('--weight_decay', type=float, default=5e-4)
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                         help='SGD momentum (default: 0.9)')
@@ -114,7 +114,7 @@ def main():
                         help='disables CUDA training')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
-    parser.add_argument('--ckpt', type=str, default='checkpoint/teacher/cifar10-resnet34_8x.pt')
+    parser.add_argument('--ckpt', type=str, default='checkpoint/teacher/cifar10-resnet34.pt')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
     parser.add_argument('--nz', type=int, default=256)
@@ -141,7 +141,12 @@ def main():
 
     num_classes = 10 if args.dataset=='cifar10' else 100
     teacher = network.resnet.ResNet34(num_classes=num_classes)
-    student = network.resnet.ResNet18(num_classes=num_classes)
+    if args.model == 'resnet18':
+        student = network.resnet.ResNet18(num_classes=num_classes)
+    elif args.model == 'effecientb3':
+        student = network.resnet.EfficientNetB3(num_classes=num_classes)
+    else:
+        raise ValueError("Unknown model: %s" % args.model)
     generator = network.gan.GeneratorA(nz=args.nz, nc=3, img_size=32)
 
     teacher.load_state_dict( torch.load( args.ckpt ) )
@@ -176,8 +181,8 @@ def main():
         acc_list.append(acc)
         if acc>best_acc:
             best_acc = acc
-            torch.save(student.state_dict(),"checkpoints/student/%s-%s.pt"%(args.dataset, 'resnet18_8x'))
-            torch.save(generator.state_dict(),"checkpoints/student/%s-%s-generator.pt"%(args.dataset, 'resnet18_8x'))
+            torch.save(student.state_dict(),"checkpoints/student/%s-%s.pt"%(args.dataset, 'resnet18'))
+            torch.save(generator.state_dict(),"checkpoints/student/%s-%s-generator.pt"%(args.dataset, 'resnet18'))
         wandb.log({"Acc": acc}, step=epoch)
     print("Best Acc=%.6f"%best_acc)
 
