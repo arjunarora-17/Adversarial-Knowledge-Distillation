@@ -38,6 +38,7 @@ def train(args, teacher, student, generator, device, optimizer, epoch):
         optimizer_G.zero_grad()
         generator.train()
         fake = generator(z)
+        print("Fake shape before - ", fake.shape)
         fake = F.interpolate(fake, size=(224, 224), mode='bilinear', align_corners=False)
         t_logit = teacher(fake) 
         s_logit = student(fake)
